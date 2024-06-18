@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- meta 設定 -->
+    <meta name="description" content="Lume Fragrance 官方形象網站：每一瓶香水，都是一場私密的心靈之旅。香氛不僅僅是一種味道，更是生活中的陪伴者。">
+    <meta name="keywords" content="香水, 針管香水, 室內擴香, 香氛蠟燭, 唇油, 面膜">
+    <meta name="company" content="Lume Fragrance">
+    <meta property="og:locale" content="zh-Hant-TW" />
+    <meta property="og:type" content="website">
+    <!-- 每頁標題 -->
+    <meta property="og:title" content="最新消息 News | Lume Fragrance">
+    <meta property="og:description" content="Lume Fragrance 官方形象網站：每一瓶香水，都是一場私密的心靈之旅。香氛不僅僅是一種味道，更是生活中的陪伴者。">
+    <meta property="og:site_name" content="Lume Fragrance 官方形象網站">
+    <!-- 換網址的話要 og 連結路徑要更改 -->
+    <meta property="og:url" content="https://anntingg.github.io/lume-fragrance/">
+    <meta property="og:image" content="https://anntingg.github.io/lume-fragrance/images/LOGO-og.png">
+
+    <title>最新消息 News | Lume Fragrance</title>
+    <!-- 手動設定 favicon -->
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+    <link rel="stylesheet" href="./css/style-ann.css">
+    <link rel="stylesheet" href="./css/style-menu.css">
+    <link rel="stylesheet" href="./css/style-footer.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/script-animate.js"></script>
+
+    <!-- React -->
+    <script type="text/babel">
+
+        const { useState, useEffect, useRef } = React;
+
+        // --------------------------頁首--------------------------
+        // 元件：banner 圖取圓角
+        const BannerBox = () => {
+            const [shortValue, setshortValue] = useState(0);
+
+            useEffect(() => {
+
+                const handleShortValue = () => {
+                    // 設定 cover 圓角數值 => 取得高度和寬度
+                    const coverRadius = document.querySelector('.banner-box');
+                    const coverRadiusWidth = coverRadius.offsetWidth;
+                    const coverRadiusHeight = coverRadius.offsetHeight;
+
+                    // 取短邊 => 設定 CSS --short-value 數值 
+                    setshortValue(Math.min(coverRadiusWidth, coverRadiusHeight) - 1);
+                    coverRadius.style.setProperty("--short-value", shortValue + "px");
+                }
+
+                // 視窗改變時 => 重新抓取 shortValue 值
+                handleShortValue();
+                window.addEventListener("resize", handleShortValue);
+
+                // Cleanup 函式，下次執行前先清除
+                return () => {
+                    window.removeEventListener('resize', handleShortValue);
+                };
+            }, [shortValue]);
+
+            return (
+                <div className="banner-box" >
+                    <img className="banner-bg" src="./images/banner-5.jpg" alt="香水" />
+                    <img className="banner-logo" src="./images/LOGO-11_A.png" alt="Lume Fragrance" />
+                </div >
+            )
+        }
+
+        // 元件：錨點按鈕
+        const Anchor = ({ sectionId, sectionCn }) => {
+            return (
+                <a href={sectionId}>
+                    <h2 className="serif-medium-s">{sectionCn}</h2>
+                    <img src="./images/gradient.png" alt="漸層" />
+                </a>
+            )
+        }
+
+        // ----------------------內容區元件-------------------
+        // 元件：Section 標題
+        const TitleM = ({ sectionCn, sectionEn }) => {
+            return (
+                <header className="title-m">
+                    <h3 className="en-sans-light-m">{sectionEn}</h3>
+                    <h1 className="serif-medium-m">{sectionCn}</h1>
+                </header>
+            )
+        }
+
+        // 元件：白色按鈕
+        const BtnWhite = ({ text }) => {
+            return (
+                <div className="btn-white ch-sans-thin-l">
+                    <span>{text}</span><div><img src="./images/arrow-right.svg" alt="箭頭" /></div>
+                </div>
+            )
+        }
+
+        //-------------------活動消息輪播-------------------
+        // 單個活動消息
+        const EventBox = ({ className, eventLink, eventDate, eventTitle, eventContent }) => {
+            return (
+                <a className={className} href={eventLink}>
+                    <div>
+                        <div className="serif-medium-m">
+                            <p>{eventDate}</p>
+                            <h2>{eventTitle}</h2>
+                            <p>{eventContent}</p>
+                        </div>
+                        <BtnWhite text="more" />
+                    </div>
+                </a>
+            )
+        }
+
+        const CarouselEvent = () => {
+            const [currentEvent, setCurrentEvent] = useState(0);
+
+            // 建立活動內容陣列 => 使用 map 迴圈跑輪播和指示長條
+            const eventList = [
+                {
+                    id: 1,
+                    className: "event1",
+                    date: "4.28 ~ 5.15",
+                    title: "母親節獻禮優惠",
+                    content: "香水類 限時7折",
+                    link: "./news-page.html",
+                },
+                {
+                    id: 2,
+                    className: "event2",
+                    date: "4.01 ~ 4.30",
+                    title: "Lume 年中慶",
+                    content: "全館不限商品9折",
+                    link: "./news-page.html",
+                },
+                {
+                    id: 3,
+                    className: "event3",
+                    date: "3.01 ~ 5.31",
+                    title: "春季限定好禮",
+                    content: "消費即送面膜1張",
+                    link: "./news-page.html",
+                },
+            ]
+
+            // 播放前一張／後一張的函式
+            const prevEvent = () => {
+                setCurrentEvent((currentEvent - 1 + eventList.length) % eventList.length);
+            }
+            const nextEvent = () => {
+                setCurrentEvent((currentEvent + 1) % eventList.length);
+            }
+
+            // useEffect：每 3 秒播放下一張 => 當 [currentEvent] 變動時，會重新執行函式
+            useEffect(() => {
+                const intervalIdEvent = setInterval(nextEvent, 3000);
+                // return 的函式，React 將在下次執行 effect 前執行，清除前一個 render 的 effect
+                return () => { clearInterval(intervalIdEvent) };
+            }, [currentEvent]);
+
+            return (
+                <>
+                    <div className="carousel-event">
+                        {
+                            eventList.map((event, index) => {
+                                return <EventBox key={event.id} className={`events-box ${index === currentEvent ? "active" : ""} ${event.className}`} eventLink={event.link} eventDate={event.date} eventTitle={event.title} eventContent={event.content} />
+                            })
+                        }
+                        <div className="navigation events">
+                            {
+                                eventList.map((element, index) => {
+                                    return (
+                                        <span
+                                            key={index}
+                                            className={`indicator ${index === currentEvent ? "active" : ""}`}
+                                            onClick={() => { setCurrentEvent(index); }}
+                                        ></span>
+                                    )
+                                })
+                            }
+                        </div>
+                        <button className="btn-prev" onClick={prevEvent}><img src="./images/icon-arrow.svg" alt="" /></button>
+                        <button className="btn-next" onClick={nextEvent}><img src="./images/icon-arrow.svg" alt="" /></button>
+
+                    </div>
+                </>
+            )
+        }
+
+        // -------------------文章專欄---------------------
+        // 陣列：文章列表內容
+        const articleList = [
+            {
+                id: 1,
+                date: "2024.04.15",
+                type: "新品上市",
+                shortTitle: "高貴工藝針管香水",
+                longTitle: "高貴工藝針管香水　｜　春末夏初的新選擇，讓您擁有細緻工藝的儀式感",
+                content: "體驗來自頂級調香師的傑作，讓香水散發出高貴典雅的氣息。高貴工藝針管香水結合了傳統工藝與現代設計，讓您擁有細緻工藝的講究。",
+                link: "./news-page.html",
+                imgName: "3D-2-s.png",
+            },
+            {
+                id: 2,
+                date: "2024.04.02",
+                type: "商品情報",
+                shortTitle: "玫瑰面膜",
+                longTitle: "玫瑰面膜　｜　沉浸玫瑰的香氛中，享受來自大自然的呵護，打造柔嫩健康的肌膚",
+                content: "玫瑰面膜甄選珍貴玫瑰精華，結合多種天然保濕成分，富含抗氧化劑，提升肌膚彈性，撫平細紋，打造柔嫩光滑的健康肌膚。",
+                link: "./news-page.html",
+                imgName: "product-7.jpg",
+            },
+            {
+                id: 3,
+                date: "2024.03.15",
+                type: "新品上市",
+                shortTitle: "杏桃花蜂蜜擴香",
+                longTitle: "杏桃花蜂蜜室內擴香　｜　 杏桃花與蜂蜜的完美結合，讓甜美香氣環繞您的生活空間",
+                content: "杏桃花蜂蜜擴香融合了自然的果香與蜂蜜的溫潤，營造出一個甜蜜、溫馨的居家氛圍，不僅能提升空間品味，更帶給您心靈的愉悅與舒適。",
+                link: "./news-page.html",
+                imgName: "product-5.jpg",
+            },
+            {
+                id: 4,
+                date: "2024.02.25",
+                type: "商品情報",
+                shortTitle: "山茶花香水",
+                longTitle: "山茶花香水　｜　 2024 春天最適合的香調！讓您感受以花香打造的清新氣息",
+                content: "探索山茶花香水的純淨香氣，感受來自大自然的清新花香，帶有豐富的層次感，宛如置身於花園之中，無論在哪個場合皆適合使用。",
+                link: "./news-page.html",
+                imgName: "3D-1-s.png",
+            },
+            {
+                id: 5,
+                date: "2024.01.16",
+                type: "專訪報導",
+                shortTitle: "關於品牌起源",
+                longTitle: "關於品牌起源　｜　 Lume Fragrance 的獨特理念，堅持打造高質感香水",
+                content: "每一瓶香水，都是一場私密的心靈之旅。香氛不僅僅是一種味道，更是生活中的陪伴者。Lume Fragrance 堅持讓每一位顧客擁有專屬儀式感。",
+                link: "./news-page.html",
+                imgName: "3D-3-s.png",
+            },
+            {
+                id: 6,
+                date: "2023.12.16",
+                type: "商品情報",
+                shortTitle: "神聖森林擴香",
+                longTitle: "神聖森林擴香　｜　 2023 冬季的獨特選擇，讓您展現沉穩、優雅與低調的魅力",
+                content: "走進神聖森林的懷抱，感受樸實的大自然芳香。神聖森林擴香融合了多種天然植物精華，幫助您放鬆身心，重獲內心的平靜與平衡。",
+                link: "./news-page.html",
+                imgName: "product-4.jpg",
+            },
+            {
+                id: 7,
+                date: "2023.11.28",
+                type: "商品情報",
+                shortTitle: "杏桃花蜂蜜蠟燭",
+                longTitle: "杏桃花蜂蜜香氛蠟燭　｜　 秋天最適合的香調，讓您沉浸於甜美花香與蜂蜜的完美結合",
+                content: "當杏桃花邂逅甜美的蜂蜜，這款蠟燭選用天然蜂蠟與高品質的杏桃花精油製成，無添加任何人工香料，為您帶來最純粹、自然的嗅覺享受。",
+                link: "./news-page.html",
+                imgName: "product-5.jpg",
+            },
+            {
+                id: 8,
+                date: "2023.10.01",
+                type: "專訪報導",
+                shortTitle: "關於品牌創辦人",
+                longTitle: "關於品牌創辦人　｜　 堅持 Lume Fragrance 品牌理念，創造顧客的專屬儀式感",
+                content: "進入「Healing Life」的領域，女性在這個快節奏的時代裡，利用香氛尋找療癒與平靜。每一瓶香水都是一場私密的心靈之旅，讓每位女性都能在外展現創造力和堅強的同時，尋找內心的寧靜與療癒。",
+                link: "./news-page.html",
+                imgName: "product-6.jpg",
+            },
+            {
+                id: 9,
+                date: "2023.08.12",
+                type: "商品情報",
+                shortTitle: "薰衣草面膜",
+                longTitle: "薰衣草面膜　｜　在一天的忙碌後，讓薰衣草面膜帶您進入寧靜與放鬆的世界",
+                content: "薰衣草面膜特別選用優質的薰衣草精油與天然成分，為您的肌膚提供深層滋養和修復，讓您享受專業級的護膚體驗。",
+                link: "./news-page.html",
+                imgName: "product-7.jpg",
+            },
+            {
+                id: 10,
+                date: "2023.07.18",
+                type: "新品上市",
+                shortTitle: "山茶花香氛蠟燭",
+                longTitle: "山茶花香氛蠟燭　｜　2023 夏季新選擇，讓您的生活充滿花香氣息",
+                content: "點亮山茶花香氛蠟燭，讓空氣充滿優雅的花香中，為您創造一個寧靜而溫馨的環境。這款香氛蠟燭以山茶花的清新香氣為主調，融合了大自然的純淨精華，為您帶來舒適與放鬆的愉悅感受。",
+                link: "./news-page.html",
+                imgName: "3D-1-s.png",
+            },
+            {
+                id: 11,
+                date: "2023.06.28",
+                type: "商品情報",
+                shortTitle: "神聖森林香水",
+                longTitle: "神聖森林香水　｜　 2023 春天最適合的香調！讓您感受以大自然的沉穩氣息",
+                content: "神聖森林香水融合了大自然的精華，捕捉了森林深處的清新芬芳，帶您走進一場神秘的旅程，為您帶來一份平靜與寧靜。",
+                link: "./news-page.html",
+                imgName: "3D-2-s.png",
+            },
+            {
+                id: 12,
+                date: "2023.06.10",
+                type: "專訪報導",
+                shortTitle: "門市空間打造",
+                longTitle: "門市空間打造　｜　 Lume Fragrance 創造舒適的空間感，讓您放鬆挑選喜歡的香調",
+                content: "我們致力於創建一個獨特而引人入勝的門市空間，安心舒適的空間感，讓每一位顧客放鬆挑選喜歡的香調。",
+                link: "./news-page.html",
+                imgName: "3D-3-s.png",
+            },
+            {
+                id: 13,
+                date: "2023.05.01",
+                type: "商品情報",
+                shortTitle: "娜拉香水",
+                longTitle: "娜拉香水　｜　 感受費洛蒙系列的獨特魅力，讓鮮明香氣圍繞著您的感官",
+                content: "費洛蒙系列是專為現代自信女性而設計，釋放出迷人的魅力及自信的氣場，讓您在人群中獨具吸引力。",
+                link: "./news-page.html",
+                imgName: "product-6.jpg",
+            },
+            {
+                id: 14,
+                date: "2023.04.22",
+                type: "商品情報",
+                shortTitle: "薰衣草唇油",
+                longTitle: "薰衣草唇油　｜　 2023 春天的獨特選擇，感受薰衣草的療癒香氣",
+                content: "薰衣草唇油為溫和滋潤護理產品，精心選用天然薰衣草精油，結合多種植物油精華，能夠深層滋潤雙唇，修護乾燥裂紋，散發出自然的健康光澤。",
+                link: "./news-page.html",
+                imgName: "product-7.jpg",
+            },
+            {
+                id: 15,
+                date: "2023.03.12",
+                type: "新品上市",
+                shortTitle: "黑醋栗面膜",
+                longTitle: "黑醋栗面膜　｜　結合多種天然保濕成分，為您的肌膚帶來奢華的護理體驗！",
+                content: "黑醋栗面膜是一款專為肌膚提供深層修護和滋潤的面膜產品。採用天然黑醋栗提取物和多種滋潤成分，能夠滲透肌膚底層，改善暗沉無光肌膚，讓您的肌膚重獲光澤與彈性。",
+                link: "./news-page.html",
+                imgName: "product-4.jpg",
+            },
+        ]
+
+        // 元件：文章卡片 
+        const ArticleCard = ({ className, imgName, imgAlt, title, content, date, link }) => {
+            return (
+                <article className={`article-card ${className}`}>
+                    <a href={link}>
+                        <img className="article-img" src={`./images/${imgName}`} alt={imgAlt} />
+                        <div className="content">
+                            <h2 className="ch-sans-thin-l">{title}</h2>
+                            <p className="line-clamp ch-sans-light-s">{content}</p>
+                            <p className="date en-sans-light-m">{date}</p>
+                            <div className="btn-s ch-sans-thin-l">
+                                <span>more</span><div><img src="./images/arrow-right.svg" alt="箭頭" /></div>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            )
+        }
+
+        // 元件：文章卡片區塊 => 輪播
+        const ArticleBox = () => {
+
+            // ------------變數設定------------
+            // 篩選需要帶入的文章 => 去除活動消息類別後的前 8 個
+            const filteredArticles = articleList.filter(article => article.type !== "活動消息").slice(0, 8);
+
+            const [currentCardIndex, setCurrentCardIndex] = useState(0);    // 目前的項目編號 => 起始為 0
+            const [shownCardNumber, setShownCardNumber] = useState(4);      // 一次顯示的數量 => 監聽螢幕尺寸改變時，會重新計算
+            const [cardWidth, setCardWidth] = useState(0);                  // 卡片寬度 = 移動的距離 => 監聽螢幕尺寸改變時，會重新計算
+            const [indicatorsAll, setIndicatorsAll] = useState([]);         // 所有指示條，為一組空陣列，在下方以 forEach 產生每個長條
+            const cardToDuplicate = 4;                                      // 需複製的數量，取最大數 4 個
+
+            // 使用 useRef 操作 DOM 元素
+            const carouselArticlesRef = useRef(null);
+            const articlesBoxRef = useRef(null);
+            const intervalIdCardRef = useRef(null);
+
+            // ------------基本函式------------
+            function getOuterWidth(element) {   // 取得含 margin 寬度
+                const style = getComputedStyle(element);
+                const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+                return element.offsetWidth + margin;
+            }
+
+            function clearIntervalCard() {  // 停止輪播
+                if (intervalIdCardRef.current) {
+                    clearInterval(intervalIdCardRef.current);
+                    intervalIdCardRef.current = null;
+                }
+            }
+
+            function restartInterval() {    // 重啟輪播
+                clearIntervalCard();
+                intervalIdCardRef.current = setInterval(showNextCard, 3000);
+            }
+
+            function activateIndicator(n) {    // 指示燈 actuve 狀態
+                indicatorsAll.forEach(element => element.classList.remove("active"));
+                indicatorsAll[n].classList.add("active");
+            }
+
+            function moveOffset(index) {     // 設定移動的距離 = 項目寬度的倍數
+                const offset = -(index * cardWidth);
+                articlesBoxRef.current.style.transform = `translateX(${offset}px)`;
+            }
+
+            // ------------resize 監聽 => 依據螢幕寬度，抓取卡片寬度 & 顯示數量------------
+            function getSettings() {
+                setCardWidth(getOuterWidth(articlesBoxRef.current.children[0]));
+
+                if (window.innerWidth > 1200) {
+                    setShownCardNumber(4);
+                } else if (window.innerWidth > 992) {
+                    setShownCardNumber(3);
+                } else if (window.innerWidth > 576) {
+                    setShownCardNumber(2);
+                } else {
+                    setShownCardNumber(1);
+                }
+            }
+
+            useEffect(() => {
+                getSettings();
+                window.addEventListener("resize", getSettings);
+                return () => {
+                    window.removeEventListener("resize", getSettings);
+                };
+            }, []);
+
+            // ------------播放下一張 => 複製項目到達最左側時，重置位移並暫停 transition ------------
+            const showNextCard = () => {
+                setCurrentCardIndex(currentIndex => {
+                    const nextIndex = currentIndex + 1;
+                    moveOffset(nextIndex);
+
+                    if (nextIndex === filteredArticles.length) {
+                        activateIndicator(0);
+
+                        setTimeout(() => {
+                            articlesBoxRef.current.style.transition = "none";
+                            setCurrentCardIndex(0);
+                            moveOffset(0);
+
+                            setTimeout(() => {
+                                articlesBoxRef.current.style.transition = "all 0.5s ease-in-out";
+                            }, 50);
+                        }, 500);
+                    } else {
+                        activateIndicator(nextIndex);
+                    }
+                    return nextIndex;
+                });
+            };
+
+            // ------------播放前一項：按鈕使用 => 第一項位移至最後一項時，帶透明度------------
+            function showPrevCard() {
+                if (currentCardIndex === 0) {
+                    setCurrentCardIndex(filteredArticles.length);
+                    articlesBoxRef.current.style.opacity = 0.5;
+
+                    setTimeout(() => {
+                        articlesBoxRef.current.style.opacity = 1;
+                    }, 500);
+                }
+
+                setCurrentCardIndex(currentIndex => {
+                    const prevIndex = currentIndex - 1;
+                    moveOffset(prevIndex);
+                    activateIndicator(prevIndex);
+
+                    return prevIndex;
+                });
+            }
+
+            // ------------指示燈------------
+            function createIndicator() {
+                const navigationCard = document.querySelector('.navigation-card');
+
+                // 建立指示長條 => 以 forEach 迴圈，讓每個輪播圖都建立對應的長條
+                filteredArticles.forEach((element, index) => {
+                    let indicatorEach = document.createElement("span");
+                    indicatorEach.classList.add("indicator-card");
+                    navigationCard.appendChild(indicatorEach);      // 把 indicator 加到 navigation 中
+                    indicatorsAll.push(indicatorEach);              // 將個別的 indicator 加到原本 indicators 空陣列中
+                });
+            }
+
+            // 點擊事件的涵式 => 抓取點擊到的序號
+            function handleIndicator(event) {
+                if (event.target.classList.contains("indicator-card")) {
+                    const index = indicatorsAll.indexOf(event.target);
+
+                    setCurrentCardIndex(index);
+                    moveOffset(index);
+                    activateIndicator(index);
+                    restartInterval();
+                }
+            }
+
+            // ------------初始值設定------------
+            // 渲染後只執行一次：複製項目，並新增到最後 + 建立指示燈
+            useEffect(() => {
+                for (let i = 0; i < shownCardNumber; i++) {
+                    const cloneCard = articlesBoxRef.current.children[i].cloneNode(true);     // true 代表複製所有內容，含子元素等
+                    articlesBoxRef.current.appendChild(cloneCard);                            // 新增複製項目至框框中
+                }
+
+                createIndicator();
+                activateIndicator(currentCardIndex);
+            }, []);
+
+            // 當螢幕寬度改變時，重新執行：自動輪播
+            useEffect(() => {
+                if (!intervalIdCardRef.current) {
+                    intervalIdCardRef.current = setInterval(showNextCard, 3000);
+                }
+
+                return () => {
+                    clearIntervalCard();
+                };
+            }, [shownCardNumber, cardWidth]);
+
+            // ------------滑鼠進入／離開 + 拖移效果------------
+            const [isDragging, setIsDragging] = useState(false);
+            const [startX, setStartX] = useState(0);
+
+            // 滑鼠按下 => 偵測按下的座標位置
+            const startDrag = (event) => {
+                event.preventDefault();
+
+                setIsDragging(true);
+                carouselArticlesRef.current.classList.add("dragging");
+
+                setStartX(event.clientX);
+            }
+
+            // 滑鼠放開 => 偵測放開座標位置，相減算出拖移距離
+            const endDrag = (event) => {
+                event.preventDefault();
+
+                if (isDragging) {
+                    setIsDragging(false);
+                    carouselArticlesRef.current.classList.remove("dragging");
+
+                    const dragDistance = event.clientX - startX;
+
+                    if (dragDistance < -100) {
+                        showNextCard();
+                    } else if (dragDistance > 100) {
+                        showPrevCard();
+                    }
+                }
+            }
+
+            // ------------觸控拖移效果------------
+            const startTouch = (event) => {
+                clearIntervalCard();
+                // event.preventDefault();
+
+                setIsDragging(true);
+                setStartX(event.changedTouches[0].clientX);
+            }
+
+            const endTouch = (event) => {
+                // event.preventDefault();
+
+                if (isDragging) {
+                    setIsDragging(false);
+
+                    const touchDistance = event.changedTouches[0].clientX - startX;
+
+                    if (touchDistance < -50) {
+                        showNextCard();
+                    } else if (touchDistance > 50) {
+                        showPrevCard();
+                    }
+
+                    restartInterval();
+                }
+            }
+
+            return (
+                <div
+                    className="carousel-articles"
+                    ref={carouselArticlesRef}
+                    onMouseEnter={clearIntervalCard}
+                    onMouseDown={startDrag}
+                    onTouchStart={startTouch}
+                    onMouseMove={(event) => {
+                        event.preventDefault();
+                        clearIntervalCard();
+                    }}
+                    onMouseUp={endDrag}
+                    onTouchEnd={endTouch}
+                    onMouseLeave={(event) => {
+                        endDrag(event);
+                        restartInterval();
+                    }}
+                >
+                    <div className="articles-box" ref={articlesBoxRef}>
+                        {
+                            filteredArticles.map((article, index) => {
+                                return <ArticleCard key={article.id} className={(index % 2 === 0) ? "up" : "down"} imgName={article.imgName} imgAlt={article.shortTitle} title={article.shortTitle} content={article.content} date={article.date} link={article.link} />
+                            })
+                        }
+                    </div>
+                    <button
+                        className="btn-prev-card"
+                        onClick={() => {
+                            showPrevCard();
+                            restartInterval();
+                        }}><img src="./images/icon-arrow.svg" alt="" /></button>
+                    <button
+                        className="btn-next-card"
+                        onClick={() => {
+                            showNextCard();
+                            restartInterval();
+                        }}><img src="./images/icon-arrow.svg" alt="" /></button>
+                    <div className="navigation-card" onClick={handleIndicator}></div>
+                </div>
+            )
+        }
+
+        // 元件：每一條文章
+        const ArticleRow = ({ articleDate, articleType, articleTitle, articleLink }) => {
+            return (
+                <a className="article-row ch-sans-light-m" href={articleLink}>
+                    <div>
+                        <p>{articleDate}</p>
+                        <h2>{articleType}</h2>
+                    </div>
+                    <p>{articleTitle}</p>
+                </a>
+            )
+        }
+
+        // 元件：每一頁文章
+        const ArticlePage = ({ pageNumber, isActive, startId, endId }) => {
+            return (
+                <div id={`article-page${pageNumber}`} className={`article-page ${isActive ? "show" : ""}`}>
+                    {
+                        articleList.map((article) => {
+                            if (article.id >= startId && article.id <= endId) {
+                                return <ArticleRow key={article.id} articleDate={article.date} articleType={article.type} articleTitle={article.longTitle} articleLink={article.link} />
+                            }
+                        })
+                    }
+                </div>
+            )
+        }
+
+        // 元件：文章列表
+        const ArticleListBox = () => {
+            const [activePage, setActivePage] = useState(1);
+            const showArticlePage = (pageNumber) => setActivePage(pageNumber);
+
+            const showArticles = 5;
+            const totalPages = Math.ceil(articleList.length / showArticles);
+
+            const changePage = (changeNumber) => {
+                let newPageNumber = activePage + changeNumber;
+
+                if (newPageNumber < 1) {
+                    newPageNumber = totalPages;
+                } else if (newPageNumber > totalPages) {
+                    newPageNumber = 1;
+                }
+
+                setActivePage(newPageNumber);
+            };
+
+            return (
+
+                <div className="article-list">
+                    <ArticlePage pageNumber={1} isActive={activePage === 1} startId={1} endId={showArticles} />
+                    <ArticlePage pageNumber={2} isActive={activePage === 2} startId={showArticles + 1} endId={showArticles * 2} />
+                    <ArticlePage pageNumber={3} isActive={activePage === 3} startId={showArticles * 2 + 1} endId={showArticles * 3} />
+
+                    <div className="pagination serif-medium-s ">
+                        <div className="arrow-prev" onClick={() => changePage(-1)}><img src="./images/icon-arrow-grey.svg" alt="" /></div>
+                        <div className={`page-number ${activePage === 1 ? "active" : ""}`} onClick={() => showArticlePage(1)}>1</div>
+                        <div className={`page-number ${activePage === 2 ? "active" : ""}`} onClick={() => showArticlePage(2)}>2</div>
+                        <div className={`page-number ${activePage === 3 ? "active" : ""}`} onClick={() => showArticlePage(3)}>3</div>
+                        <div className="arrow-next" onClick={() => changePage(1)}><img className="arrow-right" src="./images/icon-arrow-grey.svg" alt="" /></div>
+                    </div>
+                </div>
+            )
+        }
+
+        // --------------- Main 整體內容 => 加入效果---------------------
+        const MainContent = () => {
+
+            // 淡入效果
+            useEffect(() => {
+
+                // 設定淡入函式
+                const handleFadeIn = () => {
+                    const fadeInSections = document.querySelectorAll('.fade-in');
+
+                    fadeInSections.forEach(section => {
+                        const sectionTop = section.getBoundingClientRect().top;
+
+                        if (sectionTop < (window.innerHeight - window.innerHeight / 3.2)) {
+                            section.classList.add('fade-in-show');
+                        } else {
+                            section.classList.remove('fade-in-show');
+                        }
+                    });
+
+                };
+
+                handleFadeIn();
+                window.addEventListener("scroll", handleFadeIn);
+                window.addEventListener("resize", handleFadeIn);
+
+                return () => {
+                    window.removeEventListener("scroll", handleFadeIn);
+                    window.removeEventListener("resize", handleFadeIn);
+                };
+            }, []);
+
+
+            // 捲動到指定 ID 位置
+            useEffect(() => {
+                // 網址列的 # 內容
+                const hash = window.location.hash;
+
+                // 檢查 hash 是否存在，並抓出目標 ID Section
+                if (hash) {
+                    const targetSection = document.querySelector(hash);
+
+                    // 檢查目標 Section 是否存在
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+
+            }, []); // 當 DOM 完成渲染，只執行一次
+
+            return (
+                <main>
+
+                    <div className="cover">
+
+                        <div className="top-box">
+                            <BannerBox />
+                            <div className="title-l">
+                                <h2 className="en-sans-light-xl"><span>News</span></h2>
+                                <div className="title-line"><span></span></div>
+                                <h1 className="serif-medium-xxl"><span>最新消息</span> </h1>
+                                <img src="./images/gradient.png" alt="漸層" />
+                            </div>
+                        </div>
+
+                        <div className="anchor">
+                            <Anchor sectionId="#events" sectionCn="活動消息" />
+                            <Anchor sectionId="#members-only" sectionCn="會員獨享" />
+                            <Anchor sectionId="#articles" sectionCn="文章專欄" />
+                        </div>
+
+                    </div>
+
+                    <div className="container">
+
+                        <section id="events" className="fade-in">
+                            <TitleM sectionCn="活動訊息" sectionEn="Events" />
+                            <CarouselEvent />
+                        </section>
+
+                        <section id="members-only" className="fade-in">
+                            <TitleM sectionCn="會員獨享" sectionEn="Members Only" />
+                            <div className="members-outer-box">
+                                <a className="members-box" href="./membership.html">
+                                    <div className="serif-medium-m">
+                                        <div className="star">
+                                            <img src="./images/star.svg" alt="星星" />
+                                            <span className="star-line"></span>
+                                        </div>
+                                        <h2>加入會員 享多重優惠</h2>
+                                        <p>單筆結帳 最高85折</p>
+                                        <p>生日禮券 最高$800</p>
+                                        <div className="star star-down">
+                                            <span className="star-line"></span>
+                                            <img src="./images/star.svg" alt="星星" />
+                                        </div>
+                                    </div>
+                                    <BtnWhite text="會員制度" />
+                                </a>
+                            </div>
+                        </section>
+
+                        <section id="articles" className="fade-in">
+                            <TitleM sectionCn="文章專欄" sectionEn="Articles" />
+                            <ArticleBox />
+                            <ArticleListBox />
+                        </section>
+
+                    </div>
+                </main>
+            )
+        }
+
+        const App = () => {
+
+            return (
+                <>
+                    <header className="header">
+                        <nav>
+                            <input type="checkbox" id="switch" />
+                            <label className="label-container" htmlFor="switch"><span><img src="./images/list-cloes.svg" /></span> </label>
+                            <ul className="menu">
+                                <li><a className="contact-link serif-medium-s" href="./index.html">首頁
+                                    <small className="enText en-sans-light-s">Home</small></a>
+                                </li>
+                                <li>
+                                    <a className="serif-medium-s" href="./products.html">商品總覽
+                                        <small className="enText en-sans-light-s">Products</small></a>
+                                </li>
+                                <li className="box-container">
+                                    <div className="list-container">
+                                        <ul className="list-A">
+                                            <li><a className="contact-link ch-sans-thin-l" href="./perfume.html">香水</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./diffuse.html">室內擴香</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./lip-gloss.html">唇油</a></li>
+                                        </ul>
+                                        <ul className="list-B">
+                                            <li><a className="contact-link ch-sans-thin-l" href="./travel-spray.html">針管香水</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./candle.html">香氛蠟燭</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./facial-mask.html">面膜</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li className="box-line">
+                                    <div className="list-element-line"></div>
+                                </li>
+                                <li><a className="contact-link serif-medium-s" href="./story.html">品牌故事
+                                    <small className="enText en-sans-light-s">Brand Story</small></a>
+                                </li>
+                                <li><a className="contact-link serif-medium-s" href="./news.html">最新消息
+                                    <small className="enText en-sans-light-s">News</small></a>
+                                </li>
+                                <li><a className="contact-link serif-medium-s" href="./membership.html">會員制度
+                                    <small className="enText en-sans-light-s">Membership</small></a>
+                                </li>
+                                <li> <a className="contact-link serif-medium-s" href="./contact.html">聯絡我們
+                                    <small className="enText en-sans-light-s">Contact</small> </a>
+                                    <img className="logo-right" src="./images/LOGO-08.png" alt="" />
+                                </li>
+                            </ul>
+                        </nav>
+                    </header>
+
+                    <MainContent />
+
+                    <footer>
+                        <img className="bg animate" src="./images/index/LOGO-w-cut-12.png" alt="" />
+                        <img className="star-1 shine-2" src="./images/index/star-w.svg" alt="" />
+                        <img className="star-2 shine-2" src="./images/index/star-w.svg" alt="" />
+                        <img className="star-3 shine" src="./images/index/star-w.svg" alt="" />
+                        <img className="star-4 shine" src="./images/index/star-w.svg" alt="" />
+                        <div className="content">
+                            <a href="./index.html"><img src="./images/index/LOGO-07.png" alt="" /></a>
+                            <div className="center">
+                                <div className="social">
+                                    <a href="#">
+                                        <img src="./images/index/icon/FB.svg" alt="" />
+                                    </a>
+                                    <a href="#">
+                                        <img src="./images/index/icon/IG.svg" alt="" />
+                                    </a>
+                                    <a href="#">
+                                        <img src="./images/index/icon/LINE.svg" alt="" />
+                                    </a>
+                                </div>
+                                <small className="en-sans-light-m">© 2024 Lumé, inc</small>
+                            </div>
+                            <div className="serif-medium-footer">
+                                <a href="./index.html">首頁</a>
+                                <a href="./news.html">最新消息</a>
+                                <a href="./products.html">商品總覽</a>
+                                <a href="./membership.html">會員制度</a>
+                                <a href="./story.html">品牌故事</a>
+                                <a href="./contact.html">聯絡我們</a>
+                            </div>
+                        </div>
+                        <button className="btn-top" onClick={scrollToTop}></button>
+                    </footer>
+
+                </>
+            )
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+    </script>
+
+</body>
+
+</html>

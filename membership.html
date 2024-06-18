@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- meta 設定 -->
+    <meta name="description" content="Lume Fragrance 官方形象網站：每一瓶香水，都是一場私密的心靈之旅。香氛不僅僅是一種味道，更是生活中的陪伴者。">
+    <meta name="keywords" content="香水, 針管香水, 室內擴香, 香氛蠟燭, 唇油, 面膜">
+    <meta name="company" content="Lume Fragrance">
+    <meta property="og:locale" content="zh-Hant-TW" />
+    <meta property="og:type" content="website">
+    <!-- 每頁標題 -->
+    <meta property="og:title" content="會員制度 Membership | Lume Fragrance">
+    <meta property="og:description" content="Lume Fragrance 官方形象網站：每一瓶香水，都是一場私密的心靈之旅。香氛不僅僅是一種味道，更是生活中的陪伴者。">
+    <meta property="og:site_name" content="Lume Fragrance 官方形象網站">
+    <!-- 換網址的話要 og 連結路徑要更改 -->
+    <meta property="og:url" content="https://anntingg.github.io/lume-fragrance/">
+    <meta property="og:image" content="https://anntingg.github.io/lume-fragrance/images/LOGO-og.png">
+
+    <title>會員制度 Membership | Lume Fragrance</title>
+    <!-- 手動設定 favicon -->
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+    <link rel="stylesheet" href="./css/style-ann.css">
+    <link rel="stylesheet" href="./css/style-menu.css">
+    <link rel="stylesheet" href="./css/style-footer.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/script-animate.js"></script>
+
+    <!-- React -->
+    <script type="text/babel">
+
+        const { useState, useEffect } = React;
+
+        // --------------------------頁首--------------------------
+        // 元件：banner 圖取圓角
+        const BannerBox = () => {
+            const [shortValue, setshortValue] = useState(0);
+
+            useEffect(() => {
+
+                const handleShortValue = () => {
+                    // 設定 cover 圓角數值 => 取得高度和寬度
+                    const coverRadius = document.querySelector('.banner-box');
+                    const coverRadiusWidth = coverRadius.offsetWidth;
+                    const coverRadiusHeight = coverRadius.offsetHeight;
+
+                    // 取短邊 => 設定 CSS --short-value 數值 
+                    setshortValue(Math.min(coverRadiusWidth, coverRadiusHeight) - 1);
+                    coverRadius.style.setProperty("--short-value", shortValue + "px");
+                }
+
+                // 視窗改變時 => 重新抓取 shortValue 值
+                handleShortValue();
+                window.addEventListener("resize", handleShortValue);
+
+                // Cleanup 函式，下次執行前先清除
+                return () => {
+                    window.removeEventListener('resize', handleShortValue);
+                };
+            }, [shortValue]);
+
+            return (
+                <div className="banner-box" >
+                    <img className="banner-bg" src="./images/banner-6.jpg" alt="香水" />
+                    <img className="banner-logo" src="./images/LOGO-11_A.png" alt="Lume Fragrance" />
+                </div >
+            )
+        }
+
+        // 元件：錨點按鈕
+        const Anchor = ({ sectionId, sectionCn }) => {
+            return (
+                <a href={sectionId}>
+                    <h2 className="serif-medium-s">{sectionCn}</h2>
+                    <img src="./images/gradient.png" alt="漸層" />
+                </a>
+            )
+        }
+
+        // ----------------------內容區元件-----------------------
+        // 元件：Section 標題
+        const TitleM = ({ sectionCn, sectionEn }) => {
+            return (
+                <header className="title-m">
+                    <h3 className="en-sans-light-m">{sectionEn}</h3>
+                    <h1 className="serif-medium-m">{sectionCn}</h1>
+                </header>
+            )
+        }
+
+        // 元件：會員等級卡片 
+        const LevelCard = ({ className, name, info, item1, item2, item3a, item3b, item4, item5 }) => {
+            return (
+                <div className={`level-card ${className}`}>
+                    <h2 className="serif-medium-s">{name}</h2>
+                    <p className="level-info ch-sans-light-m">{info}</p>
+                    <div className="ch-sans-light-m">
+                        <div className="level-item">
+                            <p className="item-left">會員優惠：</p>
+                            <p className="item-right">{item1}</p>
+                        </div>
+                        <div className="level-item">
+                            <p className="item-left">生日禮券：</p>
+                            <p className="item-right">{item2}</p>
+                        </div>
+                        <div className="level-item">
+                            <p className="item-left">{item3a}</p>
+                            <p className="item-right">{item3b}</p>
+                        </div>
+                        <div className="level-item">
+                            <p className="item-left">等級效期：</p>
+                            <p className="item-right">{item4}</p>
+                        </div>
+                        <div className="level-item">
+                            <p className="item-left">續等資格：</p>
+                            <p className="item-right">{item5}</p>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
+        // --------------- Main 整體內容 => 加入淡入效果---------------------
+        const MainContent = () => {
+
+            // 陣列：會員項目內容 => 使用 map 跑會員等級卡片
+            const levelList = [
+                {
+                    id: 1,
+                    className: "general",
+                    name: "一般會員",
+                    info: "加入會員",
+                    item1: "9折",
+                    item2: "$200",
+                    item3a: "註冊禮券：",
+                    item3b: "$100",
+                    item4: "永久",
+                    item5: "無",
+                },
+                {
+                    id: 2,
+                    className: "gold",
+                    name: "白金會員",
+                    info: "年消費滿$5000",
+                    item1: "88折",
+                    item2: "$500",
+                    item3a: "升等禮券：",
+                    item3b: "$200",
+                    item4: "一年",
+                    item5: "消費滿$2000",
+                },
+                {
+                    id: 3,
+                    className: "diamond",
+                    name: "鑽石會員",
+                    info: "年消費滿$8000",
+                    item1: "85折",
+                    item2: "$800",
+                    item3a: "升等禮券：",
+                    item3b: "$500",
+                    item4: "一年",
+                    item5: "消費滿$2000",
+                }
+            ]
+
+            // 淡入效果
+            useEffect(() => {
+
+                // 設定淡入函式
+                const handleFadeIn = () => {
+                    const fadeInSections = document.querySelectorAll('.fade-in');
+
+                    fadeInSections.forEach(section => {
+                        const sectionTop = section.getBoundingClientRect().top;
+
+                        if (sectionTop < (window.innerHeight - window.innerHeight / 3.2)) {
+                            section.classList.add('fade-in-show');
+                        } else {
+                            section.classList.remove('fade-in-show');
+                        }
+                    });
+
+                };
+
+                handleFadeIn();
+                window.addEventListener("scroll", handleFadeIn);
+                window.addEventListener("resize", handleFadeIn);
+
+                return () => {
+                    window.removeEventListener("scroll", handleFadeIn);
+                    window.removeEventListener("resize", handleFadeIn);
+                };
+            }, []);
+
+            return (
+                <main>
+                    <div className="cover">
+
+                        <div className="top-box">
+                            <BannerBox />
+                            <div className="title-l">
+                                <h2 className="en-sans-light-xl"><span>Membership</span></h2>
+                                <div className="title-line"><span></span></div>
+                                <h1 className="serif-medium-xxl"><span>會員制度</span> </h1>
+                                <img src="./images/gradient.png" alt="漸層" />
+                            </div>
+                        </div>
+
+                        <div className="anchor">
+                            <Anchor sectionId="#levels" sectionCn="會員等級" />
+                            <Anchor sectionId="#notes" sectionCn="權益說明" />
+                        </div>
+
+                    </div>
+
+                    <div className="container">
+
+                        <section id="levels" className="fade-in">
+                            <TitleM sectionCn="會員等級" sectionEn="Levels" />
+
+                            <div className="levels-box">
+                                {
+                                    levelList.map((level) => {
+                                        return <LevelCard key={level.id} className={level.className} name={level.name} info={level.info} item1={level.item1} item2={level.item2} item3a={level.item3a} item3b={level.item3b} item4={level.item4} item5={level.item5} />
+                                    })
+                                }
+                            </div>
+                        </section>
+
+                        <section id="notes" className="fade-in">
+                            <TitleM sectionCn="權益說明" sectionEn="Notes" />
+
+                            <div className="notes-box ch-sans-light-m">
+                                <ul>
+                                    <li>如欲成為 Lume Fragrance 會員，詳細註冊手續請洽 Line 官方帳號。</li>
+                                    <li>會員升等後，等級效期為升等後一年，原消費金額將繼續累積計算。</li>
+                                    <li>須於等級效期內，達續等消費門檻，方可獲得續等資格。</li>
+                                    <li>若等級效期屆滿時，消費未達續等門檻，白金會員將降為一般會員，鑽石會員則降為白金會員。</li>
+                                    <li>生日前註冊會員，即可獲得生日禮券。</li>
+                                    <li>會員相關制度皆由 Lume Fragrance 制定，Lume Fragrance 保有內容修改、變更之權益，如有任何變更，內容將公告於本網站，恕不另行通知，且不溯及既往，敬請見諒。</li>
+                                    <li>更多會員相關權益問題，請洽 Line 官方帳號。</li>
+                                </ul>
+                                <div className="follow-us">
+                                    <a href="#">
+                                        <img src="./images/line.svg" alt="line官方帳號" />
+                                        <h3 className="ch-sans-thin-l">立即加入 Lume Fragrance Line 官方帳號，隨時掌握最新消息。</h3>
+                                    </a>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </main>
+            )
+        }
+
+        const App = () => {
+
+            return (
+                <>
+                    <header className="header">
+                        <nav>
+                            <input type="checkbox" id="switch" />
+                            <label className="label-container" htmlFor="switch"><span><img src="./images/list-cloes.svg" /></span> </label>
+                            <ul className="menu">
+                                <li><a className="contact-link serif-medium-s" href="./index.html">首頁
+                                    <small className="enText en-sans-light-s">Home</small></a>
+                                </li>
+                                <li>
+                                    <a className="serif-medium-s" href="./products.html">商品總覽
+                                        <small className="enText en-sans-light-s">Products</small></a>
+                                </li>
+                                <li className="box-container">
+                                    <div className="list-container">
+                                        <ul className="list-A">
+                                            <li><a className="contact-link ch-sans-thin-l" href="./perfume.html">香水</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./diffuse.html">室內擴香</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./lip-gloss.html">唇油</a></li>
+                                        </ul>
+                                        <ul className="list-B">
+                                            <li><a className="contact-link ch-sans-thin-l" href="./travel-spray.html">針管香水</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./candle.html">香氛蠟燭</a></li>
+                                            <li><a className="contact-link ch-sans-thin-l" href="./facial-mask.html">面膜</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li className="box-line">
+                                    <div className="list-element-line"></div>
+                                </li>
+                                <li><a className="contact-link serif-medium-s" href="./story.html">品牌故事
+                                    <small className="enText en-sans-light-s">Brand Story</small></a>
+                                </li>
+                                <li><a className="contact-link serif-medium-s" href="./news.html">最新消息
+                                    <small className="enText en-sans-light-s">News</small></a>
+                                </li>
+                                <li><a className="contact-link serif-medium-s" href="./membership.html">會員制度
+                                    <small className="enText en-sans-light-s">Membership</small></a>
+                                </li>
+                                <li> <a className="contact-link serif-medium-s" href="./contact.html">聯絡我們
+                                    <small className="enText en-sans-light-s">Contact</small> </a>
+                                    <img className="logo-right" src="./images/LOGO-08.png" alt="" />
+                                </li>
+                            </ul>
+                        </nav>
+                    </header>
+
+                    <MainContent />
+
+                    <footer>
+                            <img className="bg animate" src="./images/index/LOGO-w-cut-12.png" alt="" />
+                            <img className="star-1 shine-2" src="./images/index/star-w.svg" alt="" />
+                            <img className="star-2 shine-2" src="./images/index/star-w.svg" alt="" />
+                            <img className="star-3 shine" src="./images/index/star-w.svg" alt="" />
+                            <img className="star-4 shine" src="./images/index/star-w.svg" alt="" />
+                            <div className="content">
+                                <a href="./index.html"><img src="./images/index/LOGO-07.png" alt="" /></a>
+                                <div className="center">
+                                    <div className="social">
+                                        <a href="#">
+                                            <img src="./images/index/icon/FB.svg" alt="" />
+                                        </a>
+                                        <a href="#">
+                                            <img src="./images/index/icon/IG.svg" alt="" />
+                                        </a>
+                                        <a href="#">
+                                            <img src="./images/index/icon/LINE.svg" alt="" />
+                                        </a>
+                                    </div>
+                                    <small className="en-sans-light-m">© 2024 Lumé, inc</small>
+                                </div>
+                                <div className="serif-medium-footer">
+                                    <a href="./index.html">首頁</a>
+                                    <a href="./news.html">最新消息</a>
+                                    <a href="./products.html">商品總覽</a>
+                                    <a href="./membership.html">會員制度</a>
+                                    <a href="./story.html">品牌故事</a>
+                                    <a href="./contact.html">聯絡我們</a>
+                                </div>
+                            </div>
+                            <button className="btn-top" onClick={scrollToTop}></button>
+                        </footer>
+                </>
+            )
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+    </script>
+
+
+</body>
+
+</html>

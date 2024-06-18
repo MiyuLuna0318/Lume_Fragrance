@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- meta 設定 -->
+    <meta name="description" content="Lume Fragrance 官方形象網站：每一瓶香水，都是一場私密的心靈之旅。香氛不僅僅是一種味道，更是生活中的陪伴者。">
+    <meta name="keywords" content="香水, 針管香水, 室內擴香, 香氛蠟燭, 唇油, 面膜">
+    <meta name="company" content="Lume Fragrance">
+    <meta property="og:locale" content="zh-Hant-TW" />
+    <meta property="og:type" content="website">
+    <!-- 每頁標題 -->
+    <meta property="og:title" content="商品總覽 Products | Lume Fragrance">
+    <meta property="og:description" content="Lume Fragrance 官方形象網站：每一瓶香水，都是一場私密的心靈之旅。香氛不僅僅是一種味道，更是生活中的陪伴者。">
+    <meta property="og:site_name" content="Lume Fragrance 官方形象網站">
+    <!-- 換網址的話要 og 連結路徑要更改 -->
+    <meta property="og:url" content="https://anntingg.github.io/lume-fragrance/">
+    <meta property="og:image" content="https://anntingg.github.io/lume-fragrance/images/LOGO-og.png">
+
+    <title>商品總覽 Products | Lume Fragrance</title>
+    <!-- 手動設定 favicon -->
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+    <link rel="stylesheet" href="./css/style-ann.css">
+    <link rel="stylesheet" href="./css/style-menu.css">
+    <link rel="stylesheet" href="./css/style-footer.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/script-anchor-p.js"></script>
+    <script src="./js/script-animate.js"></script>
+
+    <!-- React -->
+    <script type="text/babel">
+        // 取出 useState & useEffect 的方法
+        const { useState, useEffect } = React;
+
+        // JSON 建立陣列資料
+        const requestURL = "https://anntingg.github.io/lume-fragrance/products.json";
+        // const requestURL = ".//products.json";
+        let request = new XMLHttpRequest();
+        request.open("GET", requestURL);
+        request.responseType = "json";
+        request.send();
+
+        request.onload = function () {
+            // 將 JSON 資料丟給 products 變數 => 單項商品詳細資料
+            const products = request.response;
+
+            //-------------------------內容區元件------------------------
+            // 元件：錨點按鈕
+            const AnchorP = ({ typeId, typeCn, typeEn }) => {
+                return (
+                    <a href={`#${typeId}`}><span></span>{typeCn}<br />{typeEn}</a>
+                )
+            }
+
+            // 元件：Section 標題
+            const ProductTitle = ({ typeCn, typeId }) => {
+                return (
+                    <header className="product-title">
+                        <a href={`./${typeId}.html`}>
+                            <h1 className="serif-medium-l">{typeCn}</h1>
+                        </a>
+                    </header>
+                )
+            }
+
+            // 元件：單個商品項目
+            const ProductCard = ({ type, titleCn, titleEn, imgName, pageName }) => {
+                return (
+                    <a className="product-card" href={`./${pageName}.html`}>
+                        <img src={`./images/${imgName}`} alt={`${titleCn}${type}`} />
+                        <h3 className="ch-sans-thin-xl">{titleCn}</h3>
+                        <p className="ch-sans-light-s">{titleEn}</p>
+                    </a>
+                )
+            }
+
+            // 元件：商品列表 => 使用 map 跑單個商品項目
+            const ProductBox = ({ showType, showSeries }) => {
+                return (
+                    <div className="product-box">
+                        {
+                            products.map((product) => {
+                                if (product.type == showType && product.series == showSeries) {
+                                    return <ProductCard key={product.id} type={product.type} titleCn={product.titleCn} titleEn={product.titleEn} imgName={product.imgName} pageName={product.pageName} />
+                                }
+                            })
+                        }
+                    </div>
+                )
+            }
+
+            // 元件：Section：判斷是否有子系列 => 目前設定最多三個系列，若未來有更多系列再新增
+            const Section = ({ typeCn, typeId, series1, series2, series3 }) => {
+
+                const SeriesBox = ({ series }) => {
+                    if (typeof series !== "undefined") {
+                        return (
+                            <>
+                                <h2 className="serif-medium-m">{series}</h2>
+                                <ProductBox showType={typeCn} showSeries={series} />
+                            </>
+                        )
+                    }
+                }
+
+                if (typeof series1 !== "undefined") {
+                    return (
+                        <section id={typeId}>
+                            <ProductTitle typeCn={typeCn} typeId={typeId} />
+                            <SeriesBox series={series1} />
+                            <SeriesBox series={series2} />
+                            <SeriesBox series={series3} />
+                        </section>
+                    )
+                } else {
+
+                    return (
+                        <section id={typeId}>
+                            <ProductTitle typeCn={typeCn} typeId={typeId} />
+                            <ProductBox showType={typeCn} showSeries="" />
+                        </section>
+                    )
+                }
+            }
+
+            //-------------------輪播圖-------------------
+            const Carousel = () => {
+                // useState 語法 => [前者為變數, 後者是寫入變數的方法] = useState（初始值） 
+                const [currentSlide, setCurrentSlide] = useState(0);
+
+                // 建立圖片陣列 => 使用 map 迴圈跑輪播圖和指示長條
+                const slides = [
+                    "banner-1.jpg",
+                    "banner-2.jpg",
+                    "banner-3.jpg",
+                    "banner-4.jpg",
+                    "banner-5.jpg",
+                    "banner-6.jpg"
+                ];
+
+                // 播放前一張／後一張的函式
+                const prevSlide = () => {
+                    setCurrentSlide((currentSlide - 1 + slides.length) % slides.length);
+                }
+                const nextSlide = () => {
+                    setCurrentSlide((currentSlide + 1) % slides.length);
+                }
+
+                // useEffect：每 3 秒播放下一張 => 當 [currentSlide] 變動時，會重新執行函式
+                useEffect(() => {
+                    const intervalId = setInterval(nextSlide, 3000);
+                    // return 的函式，React 將在下次執行 effect 前執行，清除前一個 render 的 effect
+                    return () => { clearInterval(intervalId) };
+                }, [currentSlide]);
+
+                return (
+                    <>
+                        <div className="banner-bg-p">
+                            {
+                                slides.map((element, index) => (
+                                    <img
+                                        key={index}
+                                        className={`carousel ${index === currentSlide ? "active" : ""}`}
+                                        src={`./images/${element}`}
+                                        alt="Lume Fragrance 主打商品"
+                                    />
+                                ))
+                            }
+                        </div>
+                        <div className="navigation">
+                            {
+                                slides.map((element, index) => {
+                                    return (
+                                        <span
+                                            key={index}
+                                            className={`indicator ${index === currentSlide ? "active" : ""}`}
+                                            onClick={() => { setCurrentSlide(index); }}
+                                        ></span>
+                                    )
+                                })
+                            }
+                        </div>
+                        <button className="btn-prev" onClick={prevSlide}><img src="./images/icon-arrow.svg" alt="" /></button>
+                        <button className="btn-next" onClick={nextSlide}><img src="./images/icon-arrow.svg" alt="" /></button>
+                    </>
+                )
+            }
+
+            // --------------- Main 整體內容 => 加入效果---------------------
+            const MainContent = () => {
+                // 陣列：建立子分類資料 => return 中使用 map 跑錨點按鈕和 Section 元件
+                const typeList = [
+                    {
+                        id: 1,
+                        typeId: "perfume",
+                        typeCn: "香水",
+                        typeEn: "Perfume",
+                        series1: "自然系列",
+                        series2: "費洛蒙系列",
+                    },
+                    {
+                        id: 2,
+                        typeId: "travel-spray",
+                        typeCn: "針管香水",
+                        typeEn: "Travel Spray",
+                    },
+                    {
+                        id: 3,
+                        typeId: "diffuse",
+                        typeCn: "室內擴香",
+                        typeEn: "Diffuse",
+                    },
+                    {
+                        id: 4,
+                        typeId: "candle",
+                        typeCn: "香氛蠟燭",
+                        typeEn: "Candle",
+                    },
+                    {
+                        id: 5,
+                        typeId: "lip-gloss",
+                        typeCn: "唇油",
+                        typeEn: "Lip Gloss",
+                    },
+                    {
+                        id: 6,
+                        typeId: "facial-mask",
+                        typeCn: "面膜",
+                        typeEn: "Facial Mask",
+                    },
+                ]
+
+                // 滾動監聽 => 標題浮出效果
+                useEffect(() => {
+
+                    const moveTitles = document.querySelectorAll('.product-title a');
+
+                    // 設定效果函式
+                    const handleTitleMove = () => {
+                        moveTitles.forEach(title => {
+                            const titleTop = title.getBoundingClientRect().top;
+
+                            if (titleTop < window.innerHeight - 100) {
+                                title.classList.add('scroll-effect');
+                            } else {
+                                title.classList.remove('scroll-effect');
+                            }
+                        });
+                    };
+                    handleTitleMove();
+                    window.addEventListener("scroll", handleTitleMove);
+                    window.addEventListener("resize", handleTitleMove);
+
+                    return () => {
+                        window.removeEventListener("scroll", handleTitleMove);
+                        window.removeEventListener("resize", handleTitleMove);
+                    };
+                }, []);
+
+                // 捲動到指定 ID 位置
+                useEffect(() => {
+                    // 網址列的 # 內容
+                    const hash = window.location.hash;
+
+                    // 檢查 hash 是否存在，並抓出目標 ID Section
+                    if (hash) {
+                        const targetSection = document.querySelector(hash);
+
+                        // 檢查目標 Section 是否存在
+                        if (targetSection) {
+                            targetSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+
+                }, []); // 當 DOM 完成渲染，只執行一次
+
+                return (
+                    <main>
+                        <div className="cover">
+                            <div className="banner-box-p">
+                                <Carousel />
+                                <img className="banner-logo-p" src="./images/LOGO-07.png" alt="Lume Fragrance" />
+                                <img className="banner-gradient" src="./images/gradient.png" alt="漸層" />
+                            </div>
+                            <div id="products" className="title-p">
+                                <h2 className="en-sans-light-l"><span>Products</span></h2>
+                                <h1 className="serif-medium-l"><span>商品總覽</span></h1>
+                            </div>
+                        </div>
+
+                        <div className="container products">
+                            <div className="anchor-p ch-sans-light-m">
+                                <AnchorP typeId="products" typeCn="商品總覽" typeEn="Products" />
+                                {
+                                    typeList.map((type) => {
+                                        return <AnchorP key={type.id} typeId={type.typeId} typeCn={type.typeCn} typeEn={type.typeEn} />
+                                    })
+                                }
+                            </div>
+
+                            <div className="all-products">
+                                {
+                                    typeList.map((type) => {
+                                        return <Section key={type.id} typeCn={type.typeCn} typeId={type.typeId} series1={type.series1} series2={type.series2} series3={type.series3} />
+                                    })
+                                }
+                            </div>
+
+                        </div>
+                    </main>
+                )
+            }
+
+            const App = () => {
+
+                return (
+                    <>
+                        <header className="header">
+                            <nav>
+                                <input type="checkbox" id="switch" />
+                                <label className="label-container" htmlFor="switch"><span><img src="./images/list-cloes.svg" /></span> </label>
+                                <ul className="menu">
+                                    <li><a className="contact-link serif-medium-s" href="./index.html">首頁
+                                        <small className="enText en-sans-light-s">Home</small></a>
+                                    </li>
+                                    <li>
+                                        <a className="serif-medium-s" href="./products.html">商品總覽
+                                            <small className="enText en-sans-light-s">Products</small></a>
+                                    </li>
+                                    <li className="box-container">
+                                        <div className="list-container">
+                                            <ul className="list-A">
+                                                <li><a className="contact-link ch-sans-thin-l" href="./perfume.html">香水</a></li>
+                                                <li><a className="contact-link ch-sans-thin-l" href="./diffuse.html">室內擴香</a></li>
+                                                <li><a className="contact-link ch-sans-thin-l" href="./lip-gloss.html">唇油</a></li>
+                                            </ul>
+                                            <ul className="list-B">
+                                                <li><a className="contact-link ch-sans-thin-l" href="./travel-spray.html">針管香水</a></li>
+                                                <li><a className="contact-link ch-sans-thin-l" href="./candle.html">香氛蠟燭</a></li>
+                                                <li><a className="contact-link ch-sans-thin-l" href="./facial-mask.html">面膜</a></li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li className="box-line">
+                                        <div className="list-element-line"></div>
+                                    </li>
+                                    <li><a className="contact-link serif-medium-s" href="./story.html">品牌故事
+                                        <small className="enText en-sans-light-s">Brand Story</small></a>
+                                    </li>
+                                    <li><a className="contact-link serif-medium-s" href="./news.html">最新消息
+                                        <small className="enText en-sans-light-s">News</small></a>
+                                    </li>
+                                    <li><a className="contact-link serif-medium-s" href="./membership.html">會員制度
+                                        <small className="enText en-sans-light-s">Membership</small></a>
+                                    </li>
+                                    <li> <a className="contact-link serif-medium-s" href="./contact.html">聯絡我們
+                                        <small className="enText en-sans-light-s">Contact</small> </a>
+                                        <img className="logo-right" src="./images/LOGO-08.png" alt="" />
+                                    </li>
+                                </ul>
+                            </nav>
+                        </header>
+
+                        <MainContent />
+
+                        <footer>
+                            <img className="bg animate" src="./images/index/LOGO-w-cut-12.png" alt="" />
+                            <img className="star-1 shine-2" src="./images/index/star-w.svg" alt="" />
+                            <img className="star-2 shine-2" src="./images/index/star-w.svg" alt="" />
+                            <img className="star-3 shine" src="./images/index/star-w.svg" alt="" />
+                            <img className="star-4 shine" src="./images/index/star-w.svg" alt="" />
+                            <div className="content">
+                                <a href="./index.html"><img src="./images/index/LOGO-07.png" alt="" /></a>
+                                <div className="center">
+                                    <div className="social">
+                                        <a href="#">
+                                            <img src="./images/index/icon/FB.svg" alt="" />
+                                        </a>
+                                        <a href="#">
+                                            <img src="./images/index/icon/IG.svg" alt="" />
+                                        </a>
+                                        <a href="#">
+                                            <img src="./images/index/icon/LINE.svg" alt="" />
+                                        </a>
+                                    </div>
+                                    <small className="en-sans-light-m">© 2024 Lumé, inc</small>
+                                </div>
+                                <div className="serif-medium-footer">
+                                    <a href="./index.html">首頁</a>
+                                    <a href="./news.html">最新消息</a>
+                                    <a href="./products.html">商品總覽</a>
+                                    <a href="./membership.html">會員制度</a>
+                                    <a href="./story.html">品牌故事</a>
+                                    <a href="./contact.html">聯絡我們</a>
+                                </div>
+                            </div>
+                            <button className="btn-top" onClick={scrollToTop}></button>
+                        </footer>
+                    </>
+                )
+            };
+
+            ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+        };
+
+    </script>
+
+</body>
+
+</html>
