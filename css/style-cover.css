@@ -1,0 +1,380 @@
+@charset "UTF-8";
+
+@media (max-width: 992px) {
+
+    /* 黑體 - 英 */
+    .cover .en-sans-light-xl {
+        font-size: 20px;
+        letter-spacing: 0.1em;
+    }
+
+    /* 標題明體 */
+    .cover .serif-medium-xxl {
+        font-size: 56px;
+        letter-spacing: 0.1em;
+    }
+}
+
+
+@media (max-width: 576px) {
+
+    .cover .en-sans-light-xl {
+        /* 原本 24px */
+        font-size: 16px;
+        letter-spacing: 0.1em;
+    }
+
+
+    .cover .serif-medium-xxl {
+        /* 原本 72px */
+        font-size: 32px;
+        letter-spacing: 0.1em;
+    }
+}
+
+
+/* 共用 cover 區 */
+.cover {
+    max-width: 1440px;
+    height: 100vh;
+    min-height: 600px;
+    max-height: 800px;
+    padding: 0 10vw;
+    margin: auto auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+    .cover {
+        height: auto;
+        min-height: 0;
+        padding: 0 8vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .cover {
+        padding: 0 6vw;
+    }
+}
+
+/* 會員制度和最新消息 - cover 上方區塊 */
+/* 動畫 */
+@keyframes logoMove {
+    from { left: -300px;}
+    to { left: 0;}
+}
+
+@keyframes titleMove{
+    from {transform: translateY(100%)}
+    to {transform: translateY(0)}
+}
+
+@keyframes coverFade {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes gradientFade {
+    from {opacity: 0;}
+    to {opacity: 0.6;}
+}
+
+@keyframes lineMove {
+    from {width: 0;}
+    to {width: 18%;}
+}
+
+/* 左方圖 */
+.top-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+}
+
+.banner-box {
+    width: 76%;
+    aspect-ratio: 1.5 / 1;
+    /* max-height: 540px; */
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 var(--short-value, 0) 0;
+    animation: coverFade 1.5s both;
+}
+
+.banner-bg {
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    object-fit: cover;
+}
+
+.banner-box::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    background: var(--overlay);
+    mix-blend-mode: overlay;
+}
+
+.banner-logo {
+    width: auto;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    object-fit: contain;
+    mix-blend-mode: color-dodge;
+    animation: logoMove 1.5s both;
+}
+
+
+/* 右方標題 */
+.title-l {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    text-align: right;
+}
+
+.title-l h1,
+.title-l h2,
+.title-l >div {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.title-l h2 span {
+    display: block;
+    animation: titleMove 1s 0.8s both;
+}
+
+/* .title-l h2::after {
+    content: "";
+    height: 68px;
+    margin: 40px 0 32px;
+    display: block;
+    z-index: 2;
+    border-right: 1px solid var(--font-grey);
+} */
+
+.title-l .title-line {
+    height: 68px;
+    margin: 40px 0 32px;
+    z-index: 2;
+}
+
+.title-l .title-line span {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-right: 1px solid var(--font-grey);
+    animation: titleMove 1s 0.5s both;
+}
+
+.title-l h1 span {
+    display: block;
+    animation: titleMove 1s both;
+}
+
+.title-l img {
+    position: absolute;
+    z-index: 1;
+    right: -90px;
+    bottom: -70px;
+    object-fit: fill;
+    opacity: 0.6;
+    transform: rotate(250deg);
+    animation: gradientFade 1s 0.5s both;
+}
+
+
+@media (max-width: 1200px) {
+    .banner-box {
+        width: 70%;
+    }
+
+    .title-l .title-line {
+        height: 56px;
+        margin: 32px 0 24px;
+    }
+
+    .title-l img {
+        width: 240px;
+        right: -72px;
+        bottom: -60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .title-l .title-line {
+        height: 40px;
+        margin: 24px 0 16px;
+    }
+
+    .title-l img {
+        width: 84%;
+        right: -60px;
+        bottom: -50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .title-l img {
+        width: 80%;
+        right: -40px;
+        bottom: -40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .top-box {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .banner-box {
+        width: 100%;
+    }
+
+    .title-l {
+        padding-top: 32px;
+        position: relative;
+        text-align: center;
+    }
+
+    .title-l .title-line {
+        display: none;
+    }
+
+    .title-l h1,
+    .title-l h2 {
+        padding: 4px;
+    }
+
+    .title-l img {
+        display: none;
+    }
+
+}
+
+/* 錨點按鈕 */
+.anchor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    animation: coverFade 1s 0.8s both;
+}
+
+.anchor::before,
+.anchor::after {
+    content: "";
+    width: 18%;
+    height: 1px;
+    position: absolute;
+    top: 50%;
+    background: var(--font-grey);
+    animation: lineMove 1s 1s both;
+}
+
+.anchor::before {
+    left: 0;
+}
+
+.anchor::after {
+    right: 0;
+}
+
+.anchor a {
+    padding: 12px 56px;
+    position: relative;
+    cursor: pointer;
+}
+
+.anchor a h2 {
+    padding: 22px 0;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom .5s;
+}
+
+.anchor a:hover h2 {
+    border-bottom: 2px solid var(--font-grey);
+}
+
+.anchor a img {
+    width: 100px;
+    position: absolute;
+    top: 4px;
+    left: 30px;
+    z-index: 1;
+    object-fit: fill;
+    transform: rotate(70deg);
+    opacity: 0.1;
+    transition: opacity .5s;
+}
+
+.anchor a:hover img {
+    opacity: 0.6;
+}
+
+@media (max-width: 1200px) {
+
+    .anchor {
+        padding-top: 40px;
+    }
+
+    .anchor::before,
+    .anchor::after {
+        display: none;
+    }
+
+    .anchor a {
+        padding: 12px 48px;
+    }
+
+    .anchor a h2 {
+        border-bottom: 0px solid var(--font-grey);
+        font-size: 20px;
+    }
+
+    .anchor a img {
+        width: 80px;
+        top: 8px;
+        left: 30px;
+        opacity: 0.6;
+    }
+
+}
+
+@media (max-width: 576px) {
+    .anchor {
+        padding-top: 10px;
+    }
+
+    .anchor a {
+        padding: 12px 16px;
+    }
+
+    .anchor a h2 {
+        font-size: 16px;
+    }
+
+    .anchor a img {
+        width: 64px;
+        top: 16px;
+        left: 0;
+    }
+}
